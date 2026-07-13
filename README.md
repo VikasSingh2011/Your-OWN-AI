@@ -5,7 +5,7 @@ Implements **HNSW**, **KD-Tree**, and **Brute Force** search algorithms side-by-
 
 > Built as an educational project to show how production vector databases like Pinecone, Weaviate, and Chroma actually work under the hood.
 
-🚀 **Live Demo**: [https://quiet-eggs-sit.loca.lt](https://quiet-eggs-sit.loca.lt) *(Temporary localtunnel link)*
+🚀 **Live Demo**: [https://avoiding-maps-centuries-genre.trycloudflare.com](https://avoiding-maps-centuries-genre.trycloudflare.com) *(Cloudflare Tunnel — No IP validation required)*
 
 ---
 
