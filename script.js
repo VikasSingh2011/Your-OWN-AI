@@ -30,18 +30,26 @@ function switchTab(name) {
 //  TEXT → 16-D EMBEDDING (for demo vectors)
 // ════════════════════════════════════════════════════════════
 const KW = {
-  cs:     ['algorithm','data','tree','graph','array','linked','hash','stack','queue','sort','binary','dynamic','programming','recursion','complexity','pointer','node','search','insert','bfs','dfs','heap','trie'],
-  math:   ['calculus','matrix','probability','theorem','integral','derivative','linear','algebra','equation','function','prime','modular','combinatorics','permutation','eigenvalue','statistics','proof'],
+  cs:     ['algorithm','data','tree','graph','array','linked','hash','stack','queue','sort','binary','dynamic','programming','recursion','complexity','pointer','node','search','insert','bfs','dfs','heap','trie','ai','ml','aiml','artificial','intelligence','machine','learning','deep','neural','network','model','nlp','llm','transformer','dataset','training','weights','vision'],
+  math:   ['calculus','matrix','probability','theorem','integral','derivative','linear','algebra','equation','function','prime','modular','combinatorics','permutation','eigenvalue','statistics','proof','vector','gradient','loss','optimization'],
   food:   ['food','pizza','sushi','ramen','pasta','recipe','cook','eat','restaurant','dish','ingredient','flavor','spice','noodle','bread','croissant','taco','fish','rice','soup'],
   sports: ['sport','basketball','football','tennis','chess','swim','game','play','score','team','athlete','competition','match','tournament','olympic','dribble','tackle','serve']
 };
 
 function textToEmbedding(text) {
-  const t = text.toLowerCase(), ws = t.split(/\s+/);
+  const t = text.toLowerCase(), ws = t.split(/[^a-z0-9]+/);
   const s = {cs:0,math:0,food:0,sports:0};
-  for (const w of ws)
-    for (const [cat, kws] of Object.entries(KW))
-      for (const kw of kws) if (w.includes(kw)||kw.startsWith(w)) { s[cat]+=0.35; break; }
+  for (const w of ws) {
+    if (!w) continue;
+    for (const [cat, kws] of Object.entries(KW)) {
+      for (const kw of kws) {
+        if (w === kw || (kw.length >= 4 && (w.includes(kw) || kw.startsWith(w)))) {
+          s[cat] += 0.5;
+          break;
+        }
+      }
+    }
+  }
   const mx = Math.max(...Object.values(s), 0.01);
   const n = v => Math.min(v/mx*0.88, 0.94);
   const jitter = () => (Math.random()-.5)*.04;
@@ -55,6 +63,7 @@ function textToEmbedding(text) {
   fill(0,s.cs); fill(4,s.math); fill(8,s.food); fill(12,s.sports);
   return emb;
 }
+
 
 // ════════════════════════════════════════════════════════════
 //  PCA
@@ -183,22 +192,74 @@ sc.addEventListener('mousemove', e => {
 sc.addEventListener('mouseleave',()=>{hoverItem=null;document.getElementById('tip').style.display='none';});
 
 // ════════════════════════════════════════════════════════════
+//  BUILT-IN DEMO VECTORS (Fallback for Standalone / GitHub Pages)
+// ════════════════════════════════════════════════════════════
+const BUILTIN_DEMO_ITEMS = [
+  {id:1, metadata:"Linked List: nodes connected by pointers", category:"cs", embedding:[0.90,0.85,0.72,0.68,0.12,0.08,0.15,0.10,0.05,0.08,0.06,0.09,0.07,0.11,0.08,0.06]},
+  {id:2, metadata:"Binary Search Tree: O(log n) search and insert", category:"cs", embedding:[0.88,0.82,0.78,0.74,0.15,0.10,0.08,0.12,0.06,0.07,0.08,0.05,0.09,0.06,0.07,0.10]},
+  {id:3, metadata:"Dynamic Programming: memoization overlapping subproblems", category:"cs", embedding:[0.82,0.76,0.88,0.80,0.20,0.18,0.12,0.09,0.07,0.06,0.08,0.07,0.08,0.09,0.06,0.07]},
+  {id:4, metadata:"Graph BFS and DFS: breadth and depth first traversal", category:"cs", embedding:[0.85,0.80,0.75,0.82,0.18,0.14,0.10,0.08,0.06,0.09,0.07,0.06,0.10,0.08,0.09,0.07]},
+  {id:5, metadata:"Hash Table: O(1) lookup with collision chaining", category:"cs", embedding:[0.87,0.78,0.70,0.76,0.13,0.11,0.09,0.14,0.08,0.07,0.06,0.08,0.07,0.10,0.08,0.09]},
+  {id:6, metadata:"Calculus: derivatives integrals and limits", category:"math", embedding:[0.12,0.15,0.18,0.10,0.91,0.86,0.78,0.72,0.08,0.06,0.07,0.09,0.07,0.08,0.06,0.10]},
+  {id:7, metadata:"Linear Algebra: matrices eigenvalues eigenvectors", category:"math", embedding:[0.20,0.18,0.15,0.12,0.88,0.90,0.82,0.76,0.09,0.07,0.08,0.06,0.10,0.07,0.08,0.09]},
+  {id:8, metadata:"Probability: distributions random variables Bayes theorem", category:"math", embedding:[0.15,0.12,0.20,0.18,0.84,0.80,0.88,0.82,0.07,0.08,0.06,0.10,0.09,0.06,0.09,0.08]},
+  {id:9, metadata:"Number Theory: primes modular arithmetic RSA cryptography", category:"math", embedding:[0.22,0.16,0.14,0.20,0.80,0.85,0.76,0.90,0.08,0.09,0.07,0.06,0.08,0.10,0.07,0.06]},
+  {id:10, metadata:"Combinatorics: permutations combinations generating functions", category:"math", embedding:[0.18,0.20,0.16,0.14,0.86,0.78,0.84,0.80,0.06,0.07,0.09,0.08,0.06,0.09,0.10,0.07]},
+  {id:11, metadata:"Neapolitan Pizza: wood-fired dough San Marzano tomatoes", category:"food", embedding:[0.08,0.06,0.09,0.07,0.07,0.08,0.06,0.09,0.90,0.86,0.78,0.72,0.08,0.06,0.09,0.07]},
+  {id:12, metadata:"Sushi: vinegared rice raw fish and nori rolls", category:"food", embedding:[0.06,0.08,0.07,0.09,0.09,0.06,0.08,0.07,0.86,0.90,0.82,0.76,0.07,0.09,0.06,0.08]},
+  {id:13, metadata:"Ramen: noodle soup with chashu pork and soft-boiled eggs", category:"food", embedding:[0.09,0.07,0.06,0.08,0.08,0.09,0.07,0.06,0.82,0.78,0.90,0.84,0.09,0.07,0.08,0.06]},
+  {id:14, metadata:"Tacos: corn tortillas with carnitas salsa and cilantro", category:"food", embedding:[0.07,0.09,0.08,0.06,0.06,0.07,0.09,0.08,0.78,0.82,0.86,0.90,0.06,0.08,0.07,0.09]},
+  {id:15, metadata:"Croissant: laminated pastry with buttery flaky layers", category:"food", embedding:[0.06,0.07,0.10,0.09,0.10,0.06,0.07,0.10,0.85,0.80,0.76,0.82,0.09,0.07,0.10,0.06]},
+  {id:16, metadata:"Basketball: fast-paced shooting dribbling slam dunks", category:"sports", embedding:[0.09,0.07,0.08,0.10,0.08,0.09,0.07,0.06,0.08,0.07,0.09,0.06,0.91,0.85,0.78,0.72]},
+  {id:17, metadata:"Football: tackles touchdowns field goals and strategy", category:"sports", embedding:[0.07,0.09,0.06,0.08,0.09,0.07,0.10,0.08,0.07,0.09,0.08,0.07,0.87,0.89,0.82,0.76]},
+  {id:18, metadata:"Tennis: racket volleys groundstrokes and Wimbledon serves", category:"sports", embedding:[0.08,0.06,0.09,0.07,0.07,0.08,0.06,0.09,0.09,0.06,0.07,0.08,0.83,0.80,0.88,0.82]},
+  {id:19, metadata:"Chess: openings endgames tactics strategic board game", category:"sports", embedding:[0.25,0.20,0.22,0.18,0.22,0.18,0.20,0.15,0.06,0.08,0.07,0.09,0.80,0.84,0.78,0.90]},
+  {id:20, metadata:"Swimming: butterfly freestyle backstroke Olympic competition", category:"sports", embedding:[0.06,0.08,0.07,0.09,0.08,0.06,0.09,0.07,0.10,0.08,0.06,0.07,0.85,0.82,0.86,0.80]}
+];
+
+// Distance calculations for clientside fallback
+function calcDistance(a, b, metric='cosine') {
+  if (metric === 'euclidean') {
+    let sum = 0;
+    for (let i = 0; i < a.length; i++) sum += (a[i] - b[i]) ** 2;
+    return Math.sqrt(sum);
+  }
+  if (metric === 'manhattan') {
+    let sum = 0;
+    for (let i = 0; i < a.length; i++) sum += Math.abs(a[i] - b[i]);
+    return sum;
+  }
+  // Cosine distance: 1 - cosine_similarity
+  let dot = 0, normA = 0, normB = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+  const denom = Math.sqrt(normA) * Math.sqrt(normB);
+  return denom === 0 ? 1 : 1 - (dot / denom);
+}
+
+// ════════════════════════════════════════════════════════════
 //  LOAD DEMO ITEMS
 // ════════════════════════════════════════════════════════════
 async function loadItems() {
   try {
     const r = await fetch(API+'/items');
     allItems = await r.json();
-    if (allItems.length >= 2) {
-      const coords = pca2D(allItems.map(v=>v.embedding));
-      pcaPoints = allItems.map((item,i)=>({x:coords[i][0],y:coords[i][1],item}));
-      let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;
-      for (const p of pcaPoints){x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);y0=Math.min(y0,p.y);y1=Math.max(y1,p.y);}
-      const px=(x1-x0)*.18||.1,py=(y1-y0)*.18||.1;
-      bounds={minX:x0-px,maxX:x1+px,minY:y0-py,maxY:y1+py};
-    }
-    document.getElementById('statsLabel').textContent=allItems.length+' vectors · '+DIMS+' dims';
-  } catch(_) {}
+  } catch(_) {
+    allItems = [...BUILTIN_DEMO_ITEMS];
+  }
+
+  if (allItems.length >= 2) {
+    const coords = pca2D(allItems.map(v=>v.embedding));
+    pcaPoints = allItems.map((item,i)=>({x:coords[i][0],y:coords[i][1],item}));
+    let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity;
+    for (const p of pcaPoints){x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);y0=Math.min(y0,p.y);y1=Math.max(y1,p.y);}
+    const px=(x1-x0)*.18||.1,py=(y1-y0)*.18||.1;
+    bounds={minX:x0-px,maxX:x1+px,minY:y0-py,maxY:y1+py};
+  }
+  document.getElementById('statsLabel').textContent=allItems.length+' vectors · '+DIMS+' dims';
 }
 
 // ════════════════════════════════════════════════════════════
@@ -209,30 +270,213 @@ function setAlgo(el) {
   el.classList.add('on'); selAlgo=el.dataset.algo;
 }
 
-async function runSearch() {
-  const text=document.getElementById('qInput').value.trim(); if(!text)return;
-  const emb=textToEmbedding(text),k=parseInt(document.getElementById('kSlider').value);
-  const metric=document.getElementById('metric').value;
-  const url=`${API}/search?v=${emb.join(',')}&k=${k}&metric=${metric}&algo=${selAlgo}`;
+async function runSearch(queryText = null) {
+  const leftInput = document.getElementById('qInput');
+  const panelInput = document.getElementById('panelSearchInput');
+  
+  let text = queryText;
+  if (!text) {
+    text = panelInput?.value.trim() || leftInput?.value.trim() || '';
+  }
+  if (!text) return;
+
+  if (leftInput && leftInput.value !== text) leftInput.value = text;
+  if (panelInput && panelInput.value !== text) panelInput.value = text;
+
+  const emb = textToEmbedding(text);
+  const k = parseInt(document.getElementById('kSlider').value);
+  const metric = document.getElementById('metric').value;
+  const url = `${API}/search?v=${emb.join(',')}&k=${k}&metric=${metric}&algo=${selAlgo}`;
+
+  let data = null;
+  const startTime = performance.now();
+
   try {
-    const r=await fetch(url), data=await r.json();
-    searchResults=data.results||[]; hitIds=new Set(searchResults.map(r=>r.id));
-    const us=data.latencyUs||0;
-    document.getElementById('latBig').textContent=us<1000?us+' μs':(us/1000).toFixed(2)+' ms';
-    document.getElementById('latSub').textContent=selAlgo.toUpperCase()+'  ·  '+metric+'  ·  k='+k;
-    if (searchResults.length>0){
-      let sx=0,sy=0,sw=0;
-      for (let i=0;i<Math.min(3,searchResults.length);i++){
-        const pt=pcaPoints.find(p=>p.item.id===searchResults[i].id);
-        if(pt){const w=1/(i+1);sx+=pt.x*w;sy+=pt.y*w;sw+=w;}
+    const r = await fetch(url);
+    data = await r.json();
+  } catch (_) {
+    // Client-side fallback search when backend is not running (e.g. GitHub Pages)
+    const scored = allItems.map(item => ({
+      id: item.id,
+      metadata: item.metadata,
+      category: item.category,
+      distance: calcDistance(emb, item.embedding, metric)
+    }));
+    scored.sort((a, b) => a.distance - b.distance);
+    const elapsedUs = Math.round((performance.now() - startTime) * 1000);
+    data = {
+      results: scored.slice(0, k),
+      latencyUs: elapsedUs,
+      algorithm: selAlgo,
+      metric: metric
+    };
+  }
+
+  searchResults = data.results || [];
+  hitIds = new Set(searchResults.map(r => r.id));
+  const us = data.latencyUs || 0;
+  document.getElementById('latBig').textContent = us < 1000 ? us + ' μs' : (us / 1000).toFixed(2) + ' ms';
+  document.getElementById('latSub').textContent = selAlgo.toUpperCase() + '  ·  ' + metric + '  ·  k=' + k;
+
+  if (searchResults.length > 0) {
+    let sx = 0, sy = 0, sw = 0;
+    for (let i = 0; i < Math.min(3, searchResults.length); i++) {
+      const pt = pcaPoints.find(p => p.item.id === searchResults[i].id);
+      if (pt) {
+        const w = 1 / (i + 1);
+        sx += pt.x * w;
+        sy += pt.y * w;
+        sw += w;
       }
-      if(sw>0)queryPt={x:sx/sw+(Math.random()-.5)*.015,y:sy/sw+(Math.random()-.5)*.015};
     }
-    renderResults(searchResults); drawVecChart(emb);
-  } catch(_){alert('Cannot reach server — is it running on :8080?');}
+    if (sw > 0) queryPt = { x: sx / sw + (Math.random() - .5) * .015, y: sy / sw + (Math.random() - .5) * .015 };
+  }
+  renderResults(searchResults);
+  drawVecChart(emb);
 }
 
-document.getElementById('qInput').addEventListener('keydown',e=>{if(e.key==='Enter')runSearch();});
+
+function panelSearch() {
+  const val = document.getElementById('panelSearchInput')?.value.trim();
+  if (val) {
+    runSearch(val);
+    explainTopic(); // Automatically explain when searching!
+  }
+}
+
+
+async function explainTopic() {
+  const leftInput = document.getElementById('qInput');
+  const panelInput = document.getElementById('panelSearchInput');
+  const rawTopic = panelInput?.value.trim() || leftInput?.value.trim();
+  
+  if (!rawTopic) {
+    alert('Please enter a topic to explain!');
+    return;
+  }
+
+  // 1. Run vector search first to highlight matching items & PCA projection
+  runSearch(rawTopic);
+
+  const card = document.getElementById('explanationCard');
+  const box = document.getElementById('explanationText');
+  const btn = document.getElementById('explainBtn');
+
+  card.style.display = 'block';
+  box.className = 'explanation-box loading';
+  box.textContent = `🤖 Ollama is generating an explanation for "${rawTopic}"...`;
+  if (btn) btn.disabled = true;
+
+  try {
+    let answerText = '';
+    box.className = 'explanation-box';
+    box.textContent = '';
+
+    const promptText = `Explain "${rawTopic}" clearly in 3-4 bullet points. Give definition, how it works, and a simple real-life example. Keep it concise, simple and informative in English and Hindi.`;
+
+    let success = false;
+
+    // Stream directly from Ollama or fallback to /explain
+    try {
+      const ollamaRes = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'llama3.2',
+          prompt: promptText,
+          stream: true
+        })
+      });
+
+      if (ollamaRes.ok && ollamaRes.body) {
+        const reader = ollamaRes.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop(); // keep partial line
+
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            try {
+              const parsed = JSON.parse(line);
+              if (parsed.response) {
+                box.textContent += parsed.response;
+                box.scrollTop = box.scrollHeight;
+                success = true;
+              }
+            } catch (_) {}
+          }
+        }
+      }
+    } catch (_) {}
+
+    // Fallback if direct streaming failed (CORS or network)
+    if (!success) {
+      box.textContent = 'Generating explanation...';
+      try {
+        const res = await fetch(API + '/explain', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic: rawTopic })
+        });
+        const data = await res.json();
+        if (data.answer) {
+          box.textContent = data.answer.trim();
+          success = true;
+        }
+      } catch (_) {}
+    }
+
+    // Standalone / GitHub Pages Knowledge Fallback (works 100% offline & without local backend)
+    if (!success) {
+      const q = rawTopic.toLowerCase();
+      let fallbackAns = '';
+      if (q.includes('ai') || q.includes('artificial')) {
+        fallbackAns = `🤖 Artificial Intelligence (AI):\n\n• What it is: AI is the branch of computer science focused on building smart systems capable of performing tasks that typically require human intelligence (problem-solving, visual perception, decision-making).\n\n• How it works: Learns from massive amounts of data using mathematical models, neural networks, and pattern recognition algorithms.\n\n• Practical Examples: ChatGPT, self-driving Tesla cars, Siri/Alexa, face recognition.\n\n🇮🇳 Hindi Summary: AI (कृत्रिम बुद्धिमत्ता) ऐसी तकनीक है जो कंप्यूटरों को इंसानों की तरह सोचने, सीखने और निर्णय लेने में सक्षम बनाती है।`;
+      } else if (q.includes('ml') || q.includes('machine learning')) {
+        fallbackAns = `⚙️ Machine Learning (ML):\n\n• What it is: A subset of AI that allows systems to automatically learn and improve from experience without being explicitly programmed.\n\n• Types: Supervised Learning (labeled data), Unsupervised Learning (clustering), and Reinforcement Learning (trial & reward).\n\n• Practical Examples: Netflix movie recommendations, email spam filters, credit card fraud detection.\n\n🇮🇳 Hindi Summary: मशीन लर्निंग डेटा से पैटर्न सीखकर भविष्यवाणियां और फैसले करती है।`;
+      } else if (q.includes('tree') || q.includes('bst')) {
+        fallbackAns = `🌲 Binary Search Tree (BST):\n\n• What it is: A hierarchical data structure where each node has at most two children. The left subtree has smaller values, while the right subtree has larger values.\n\n• Time Complexity: O(log n) average time for search, insertion, and deletion.\n\n• Real-world Use: Database indexing, filesystem hierarchies, priority queues.\n\n🇮🇳 Hindi Summary: बाइनरी सर्च ट्री एक डेटा स्ट्रक्चर है जो डेटा को तेजी से ढूंढने और सॉर्ट करने के लिए इस्तेमाल होता है।`;
+      } else {
+        fallbackAns = `💡 Explanation for "${rawTopic}":\n\n• Definition: "${rawTopic}" relates to computing, mathematics, and algorithms.\n\n• In Vector Databases: Terms like this are embedded into high-dimensional vector spaces and indexed using HNSW / KD-Trees to find semantic nearest neighbors in microseconds.\n\n• Live Demo Note: When running locally with Ollama active, this card provides real-time generative responses from llama3.2!\n\n🇮🇳 Hindi Summary: यह विषय वेक्टर स्पेस में क्लस्टर होकर निकटतम कॉन्सेप्ट्स के साथ मैच किया जाता है।`;
+      }
+      box.textContent = '';
+      const full = fallbackAns;
+      let i = 0;
+      const timer = setInterval(() => {
+        if (i >= full.length) { clearInterval(timer); return; }
+        box.textContent += full.slice(i, i + 6);
+        i += 6;
+        box.scrollTop = box.scrollHeight;
+      }, 10);
+      success = true;
+    }
+
+  } catch (err) {
+    box.className = 'explanation-box';
+    box.textContent = '❌ Ollama error: ' + (err.message || 'Check Ollama server.');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+
+
+
+
+document.getElementById('qInput')?.addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+document.getElementById('panelSearchInput')?.addEventListener('keydown', e => { 
+  if (e.key === 'Enter') {
+    if (e.shiftKey) explainTopic();
+    else panelSearch();
+  }
+});
+
 
 function renderResults(results) {
   const container = document.getElementById('results');

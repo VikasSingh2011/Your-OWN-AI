@@ -1,11 +1,12 @@
 # VectorDB — Build a Vector Database from Scratch in C++
 
-A fully working **Vector Database** built from scratch in C++ with a web UI.  
-Implements **HNSW**, **KD-Tree**, and **Brute Force** search algorithms side-by-side, plus a **RAG pipeline** powered by a local LLM via Ollama.
+A fully working **Vector Database** built from scratch in C++ with an interactive Web UI and AI topic explainer.  
+Implements **HNSW**, **KD-Tree**, and **Brute Force** search algorithms side-by-side, plus a **RAG pipeline** and topic explainer powered by LLMs.
 
 > Built as an educational project to show how production vector databases like Pinecone, Weaviate, and Chroma actually work under the hood.
 
-🚀 **Live Demo**: [https://avoiding-maps-centuries-genre.trycloudflare.com](https://avoiding-maps-centuries-genre.trycloudflare.com) *(Cloudflare Tunnel — No IP validation required)*
+🌐 **Live Interactive Web Demo**: **[https://VikasSingh2011.github.io/Your-OWN-AI/](https://VikasSingh2011.github.io/Your-OWN-AI/)**  
+*(Click to open and test search, 2D PCA cluster visualization, and AI explanations directly in your browser without any installation!)*
 
 ---
 

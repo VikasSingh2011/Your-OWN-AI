@@ -147,3 +147,33 @@ button {
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── PANEL SEARCH & AI EXPLANATION ── */
+.panel-search-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+.panel-search-box input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(108, 99, 255, 0.3);
+}
+.explanation-box {
+  background: rgba(108, 99, 255, 0.08);
+  border: 1px solid rgba(108, 99, 255, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #e2e8f0;
+  max-height: 220px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  position: relative;
+}
+.explanation-box.loading {
+  color: var(--muted);
+  font-style: italic;
+}

@@ -998,6 +998,33 @@ int main() {
         res.set_content(ss.str(), "application/json");
     });
 
+    // POST /explain {"topic":"..."}
+    // Direct AI topic explainer: fast & reliable explanation without RAG overhead
+    svr.Post("/explain", [&](const httplib::Request& req, httplib::Response& res) {
+        cors(res);
+        auto topic = extractStr(req.body, "topic");
+        if (topic.empty()) {
+            res.set_content("{\"error\":\"need topic\"}", "application/json"); return;
+        }
+
+        std::string prompt = 
+            "Explain '" + topic + "' clearly and comprehensively in simple, easy-to-understand language.\n"
+            "Include:\n"
+            "1. What it is (Definition in simple terms)\n"
+            "2. How it works (Core idea / key components)\n"
+            "3. Real-world example or practical use cases\n"
+            "Give the explanation clearly in simple English and also a brief summary in Hindi/Hinglish.\n\n"
+            "Topic: " + topic + "\n\n"
+            "Explanation:";
+
+        auto answer = ollama.generate(prompt);
+        std::ostringstream ss;
+        ss << "{\"topic\":"  << jS(topic)
+           << ",\"answer\":" << jS(answer)
+           << ",\"model\":"  << jS(ollama.genModel) << "}";
+        res.set_content(ss.str(), "application/json");
+    });
+
     // POST /doc/ask  {"question":"...","k":3}
     // Full RAG pipeline: embed → retrieve → generate
     svr.Post("/doc/ask", [&](const httplib::Request& req, httplib::Response& res) {

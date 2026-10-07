@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VectorDB — HNSW + RAG</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI-powered Vector Database with HNSW, KD-Tree and RAG — search and explain any topic using local Ollama LLM.">
+<title>VectorDB AI — Search & Explain with HNSW + RAG</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -92,6 +94,27 @@
 
     <!-- TAB: SEARCH -->
     <div class="tab-content on" id="tab-search">
+
+      <!-- In-panel search bar -->
+      <div class="panel-search-box">
+        <div class="sec">Search & Explain</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;gap:6px">
+            <input type="text" id="panelSearchInput" placeholder="Type any topic… e.g. binary tree, sushi…" style="flex:1" />
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn-p" style="flex:1" onclick="panelSearch()">⚡ SEARCH</button>
+            <button class="btn-g" style="flex:1" id="explainBtn" onclick="explainTopic()">🤖 EXPLAIN</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Explanation Card -->
+      <div id="explanationCard" style="display:none">
+        <div class="sec">🤖 AI Explanation</div>
+        <div class="explanation-box" id="explanationText"></div>
+      </div>
+
       <div>
         <div class="sec">Search Latency</div>
         <div class="lat-big" id="latBig">—</div>
@@ -100,7 +123,7 @@
       <div>
         <div class="sec">Top Matches</div>
         <div class="results" id="results">
-          <div style="color:var(--muted);font-size:11px">Run a search to see results…</div>
+          <div style="color:var(--muted);font-size:11px">Type above and press ⚡ SEARCH…</div>
         </div>
       </div>
       <div>
